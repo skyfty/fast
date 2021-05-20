@@ -107,5 +107,6 @@ int ShowVBK(LPCWSTR FilePath,
     return LISTPLUGIN_ERROR;
   }
   SetWindowTextA(RichEdit, formatJson(result).c_str());
+
   return LISTPLUGIN_OK;
 }
