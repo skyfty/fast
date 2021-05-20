@@ -93,6 +93,7 @@ std::string CBC_AESDecryptStr(const std::string& input) {
   return outstr;
 }
 
+HFONT GlobalFont = NULL;
 bool DecodeVbk(const std::string& input, std::string *output) {
   std::string result = CBC_AESDecryptStr(input);
   output->assign(result);
@@ -106,6 +107,16 @@ int ShowVBK(LPCWSTR FilePath,
   if (!DecodeVbk((LPCSTR)FileMapping, &result)) {
     return LISTPLUGIN_ERROR;
   }
+
+  //´´½¨Âß¼­×ÖÌå
+  if (GlobalFont == NULL) {
+    GlobalFont =
+        CreateFont(-15, -7.5, 0, 0, 400, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+                   OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS, DEFAULT_QUALITY,
+                   FF_DONTCARE, L"Î¢ÈíÑÅºÚ");
+  }
+
+  RichEdit.SetFont(GlobalFont);
   SetWindowTextA(RichEdit, formatJson(result).c_str());
 
   return LISTPLUGIN_OK;

@@ -236,50 +236,49 @@ int __stdcall ListSendCommand(HWND ListWin, int Command, int Parameter) {
 int _stdcall ListSearchText(HWND ListWin,
                             char* SearchString,
                             int SearchParameter) {
-  //FINDTEXT find;
-  //int StartPos, Flags;
+  FINDTEXTA find;
+  int StartPos, Flags;
 
-  //if (SearchParameter & LCS_FIND_FIRST) {
-  //  // Find first: Start at top visible line
-  //  StartPos =
-  //      SendMessage(ListWin, EM_LINEINDEX,
-  //                  SendMessage(ListWin, EM_GETFIRSTVISIBLELINE, 0, 0), 0);
-  //  SendMessage(ListWin, EM_SETSEL, StartPos, StartPos);
-  //} else {
-  //  // Find next: Start at current selection+1
-  //  SendMessage(ListWin, EM_GETSEL, (WPARAM)&StartPos, 0);
-  //  StartPos += 1;
-  //}
+  if (SearchParameter & LCS_FIND_FIRST) {
+    // Find first: Start at top visible line
+    StartPos =
+        SendMessage(ListWin, EM_LINEINDEX,
+                    SendMessage(ListWin, EM_GETFIRSTVISIBLELINE, 0, 0), 0);
+    SendMessage(ListWin, EM_SETSEL, StartPos, StartPos);
+  } else {
+    // Find next: Start at current selection+1
+    SendMessage(ListWin, EM_GETSEL, (WPARAM)&StartPos, 0);
+    StartPos += 1;
+  }
 
-  //find.chrg.cpMin = StartPos;
-  //find.chrg.cpMax = SendMessage(ListWin, WM_GETTEXTLENGTH, 0, 0);
-  //Flags = 0;
-  //if (SearchParameter & LCS_WHOLE_WORDS)
-  //  Flags |= FR_WHOLEWORD;
-  //if (SearchParameter & LCS_MATCH_CASE)
-  //  Flags |= FR_MATCHCASE;
-  //if (!(SearchParameter & LCS_BACK_WARDS))
-  //  Flags |= FR_DOWN;
-  //find.lpstrText = SearchString;
-  //int index = SendMessage(ListWin, EM_FINDTEXT, Flags, (LPARAM)&find);
-  //if (index != -1) {
-  //  int indexend = index + strlen(SearchString);
-  //  SendMessage(ListWin, EM_SETSEL, index, indexend);
-  //  int line = SendMessage(ListWin, EM_LINEFROMCHAR, index, 0) - 3;
-  //  if (line < 0)
-  //    line = 0;
-  //  line -= SendMessage(ListWin, EM_GETFIRSTVISIBLELINE, 0, 0);
-  //  SendMessage(ListWin, EM_LINESCROLL, 0, line);
-  //  return LISTPLUGIN_OK;
-  //} else {
-  //  SendMessage(ListWin, EM_SETSEL, -1, -1);  // Restart search at the beginning
-  //}
+  find.chrg.cpMin = StartPos;
+  find.chrg.cpMax = SendMessage(ListWin, WM_GETTEXTLENGTH, 0, 0);
+  Flags = 0;
+  if (SearchParameter & LCS_WHOLE_WORDS)
+    Flags |= FR_WHOLEWORD;
+  if (SearchParameter & LCS_MATCH_CASE)
+    Flags |= FR_MATCHCASE;
+  if (!(SearchParameter & LCS_BACK_WARDS))
+    Flags |= FR_DOWN;
+  find.lpstrText = SearchString;
+  int index = SendMessage(ListWin, EM_FINDTEXT, Flags, (LPARAM)&find);
+  if (index != -1) {
+    int indexend = index + strlen(SearchString);
+    SendMessage(ListWin, EM_SETSEL, index, indexend);
+    int line = SendMessage(ListWin, EM_LINEFROMCHAR, index, 0) - 3;
+    if (line < 0)
+      line = 0;
+    line -= SendMessage(ListWin, EM_GETFIRSTVISIBLELINE, 0, 0);
+    SendMessage(ListWin, EM_LINESCROLL, 0, line);
+    return LISTPLUGIN_OK;
+  } else {
+    SendMessage(ListWin, EM_SETSEL, -1, -1);  // Restart search at the beginning
+  }
   return LISTPLUGIN_ERROR;
 }
 
 void __stdcall ListCloseWindow(HWND ListWin) {
   DestroyWindow(ListWin);
-  return;
 }
 
 int __stdcall ListPrint(HWND ListWin,
@@ -287,155 +286,7 @@ int __stdcall ListPrint(HWND ListWin,
                         char* DefPrinter,
                         int PrintFlags,
                         RECT* Margins) {
-  //PRINTDLG PrintDlgRec;
-  //memset(&PrintDlgRec, 0, sizeof(PRINTDLG));
-  //PrintDlgRec.lStructSize = sizeof(PRINTDLG);
-
-  //PrintDlgRec.Flags = PD_ALLPAGES | PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
-  //PrintDlgRec.nFromPage = 0xFFFF;
-  //PrintDlgRec.nToPage = 0xFFFF;
-  //PrintDlgRec.nMinPage = 1;
-  //PrintDlgRec.nMaxPage = 0xFFFF;
-  //PrintDlgRec.nCopies = 1;
-  //PrintDlgRec.hwndOwner = ListWin;  // MUST be Zero, otherwise crash!
-  //if (PrintDlg(&PrintDlgRec)) {
-  //  HDC hdc = PrintDlgRec.hDC;
-  //  DOCINFO DocInfo;
-  //  POINT offset, physsize, start, avail, printable;
-  //  int LogX, LogY;
-  //  RECT rcsaved;
-
-  //  // Warning: PD_ALLPAGES is zero!
-  //  BOOL PrintSel = (PrintDlgRec.Flags & PD_SELECTION);
-  //  BOOL PrintPages = (PrintDlgRec.Flags & PD_PAGENUMS);
-  //  int PageFrom = 1;
-  //  int PageTo = 0x7FFF;
-  //  if (PrintPages) {
-  //    PageFrom = PrintDlgRec.nFromPage;
-  //    PageTo = PrintDlgRec.nToPage;
-  //    if (PageTo <= 0)
-  //      PageTo = 0x7FFF;
-  //  }
-
-  //  memset(&DocInfo, 0, sizeof(DOCINFO));
-  //  DocInfo.cbSize = sizeof(DOCINFO);
-  //  DocInfo.lpszDocName = FileToPrint;
-  //  if (StartDoc(hdc, &DocInfo)) {
-  //    SetMapMode(hdc, MM_LOMETRIC);
-  //    offset.x = GetDeviceCaps(hdc, PHYSICALOFFSETX);
-  //    offset.y = GetDeviceCaps(hdc, PHYSICALOFFSETY);
-  //    DPtoLP(hdc, &offset, 1);
-  //    physsize.x = GetDeviceCaps(hdc, PHYSICALWIDTH);
-  //    physsize.y = GetDeviceCaps(hdc, PHYSICALHEIGHT);
-  //    DPtoLP(hdc, &physsize, 1);
-
-  //    start.x = Margins->left - offset.x;
-  //    start.y = -Margins->top - offset.y;
-  //    if (start.x < 0)
-  //      start.x = 0;
-  //    if (start.y > 0)
-  //      start.y = 0;
-  //    avail.x = GetDeviceCaps(hdc, HORZRES);
-  //    avail.y = GetDeviceCaps(hdc, VERTRES);
-  //    DPtoLP(hdc, &avail, 1);
-
-  //    printable.x =
-  //        min(physsize.x - (Margins->right + Margins->left), avail.x - start.x);
-  //    printable.y =
-  //        max(physsize.y + (Margins->top + Margins->bottom), avail.y - start.y);
-
-  //    LogX = GetDeviceCaps(hdc, LOGPIXELSX);
-  //    LogY = GetDeviceCaps(hdc, LOGPIXELSY);
-
-  //    SendMessage(ListWin, EM_FORMATRANGE, 0, 0);
-
-  //    FORMATRANGE Range;
-  //    memset(&Range, 0, sizeof(FORMATRANGE));
-  //    Range.hdc = hdc;
-  //    Range.hdcTarget = hdc;
-  //    LPtoDP(hdc, &start, 1);
-  //    LPtoDP(hdc, &printable, 1);
-  //    Range.rc.left = start.x * 1440 / LogX;
-  //    Range.rc.top = start.y * 1440 / LogY;
-  //    Range.rc.right = (start.x + printable.x) * 1440 / LogX;
-  //    Range.rc.bottom = (start.y + printable.y) * 1440 / LogY;
-  //    SetMapMode(hdc, MM_TEXT);
-
-  //    BOOL PrintAborted = false;
-  //    Range.rcPage = Range.rc;
-  //    rcsaved = Range.rc;
-  //    int CurrentPage = 1;
-  //    int LastChar = 0;
-  //    int LastChar2 = 0;
-  //    int MaxLen = SendMessage(ListWin, WM_GETTEXTLENGTH, 0, 0);
-  //    Range.chrg.cpMax = -1;
-  //    if (PrintPages) {
-  //      do {
-  //        Range.chrg.cpMin = LastChar;
-  //        if (CurrentPage < PageFrom) {
-  //          LastChar = SendMessage(ListWin, EM_FORMATRANGE, 0, (LPARAM)&Range);
-  //        } else {
-  //          // waitform.ProgressLabel.Caption:=spage+inttostr(CurrentPage);
-  //          // application.processmessages;
-  //          LastChar = SendMessage(ListWin, EM_FORMATRANGE, 1, (LPARAM)&Range);
-  //        }
-  //        // Warning: At end of document, LastChar may be<MaxLen!!!
-  //        if (LastChar != -1 && LastChar < MaxLen) {
-  //          Range.rc = rcsaved;  // Check whether another page comes
-  //          Range.rcPage = Range.rc;
-  //          Range.chrg.cpMin = LastChar;
-  //          LastChar2 = SendMessage(ListWin, EM_FORMATRANGE, 0, (LPARAM)&Range);
-  //          if (LastChar < LastChar2 && LastChar < MaxLen && LastChar != -1 &&
-  //              CurrentPage >= PageFrom && CurrentPage < PageTo) {
-  //            EndPage(hdc);
-  //          }
-  //        }
-
-  //        CurrentPage++;
-  //        Range.rc = rcsaved;
-  //        Range.rcPage = Range.rc;
-  //      } while (LastChar < MaxLen && LastChar != -1 && LastChar < LastChar2 &&
-  //               (PrintPages && CurrentPage <= PageTo) && !PrintAborted);
-  //    } else {
-  //      if (PrintSel) {
-  //        SendMessage(ListWin, EM_GETSEL, (WPARAM)&LastChar, (LPARAM)&MaxLen);
-  //        Range.chrg.cpMax = MaxLen;
-  //      }
-  //      do {
-  //        Range.chrg.cpMin = LastChar;
-  //        // waitform.ProgressLabel.Caption:=spage+inttostr(CurrentPage);
-  //        // waitform.ProgressLabel.update;
-  //        // application.processmessages;
-  //        LastChar = SendMessage(ListWin, EM_FORMATRANGE, 1, (LPARAM)&Range);
-
-  //        // Warning: At end of document, LastChar may be<MaxLen!!!
-  //        if (LastChar != -1 && LastChar < MaxLen) {
-  //          Range.rc = rcsaved;  // Check whether another page comes
-  //          Range.rcPage = Range.rc;
-  //          Range.chrg.cpMin = LastChar;
-  //          LastChar2 = SendMessage(ListWin, EM_FORMATRANGE, 0, (LPARAM)&Range);
-  //          if (LastChar < LastChar2 && LastChar < MaxLen && LastChar != -1) {
-  //            EndPage(hdc);
-  //          }
-  //        }
-  //        CurrentPage++;
-  //        Range.rc = rcsaved;
-  //        Range.rcPage = Range.rc;
-  //      } while (LastChar < LastChar2 && LastChar < MaxLen && LastChar != -1 &&
-  //               !PrintAborted);
-  //    }
-  //    if (PrintAborted)
-  //      AbortDoc(hdc);
-  //    else
-  //      EndDoc(hdc);
-  //  }  // StartDoc
-
-  //  SendMessage(ListWin, EM_FORMATRANGE, 0, 0);
-  //  DeleteDC(PrintDlgRec.hDC);
-  //}
-  //if (PrintDlgRec.hDevNames)
-  //  GlobalFree(PrintDlgRec.hDevNames);
-  return 0;
+  return LISTPLUGIN_ERROR;
 }
 
 
@@ -444,87 +295,6 @@ HBITMAP __stdcall ListGetPreviewBitmapW(WCHAR* FileToLoad,
                                         int height,
                                         char* contentbuf,
                                         int contentbuflen) {
-  //RECT r;
-  //WCHAR* p;
-  //HBITMAP retval = NULL;
-  //char* newbuf;
-  //int bigx, bigy, fntsize;
-  //HDC maindc, dc_small, dc_big;
-  //HBITMAP bmp_big, bmp_small, oldbmp_big, oldbmp_small;
-  //HFONT font, oldfont;
-  //POINT pt;
-  //char ch;
-  //OSVERSIONINFO vx;
-  //BOOL is_nt = TRUE;
-  //;
-
-  //// check for operating system:
-  //// Windows 9x does NOT support the HALFTONE stretchblt mode!
-  //vx.dwOSVersionInfoSize = sizeof(vx);
-  //// GetVersionEx(&vx);
-  //// is_nt = vx.dwPlatformId == VER_PLATFORM_WIN32_NT;
-
-  //p = wcsrchr(FileToLoad, '\\');
-  //if (!p)
-  //  return NULL;
-  //p = wcsrchr(p, '.');
-  //if (!p || (_wcsicmp(p, supportedextension1) != 0 &&
-  //           _wcsicmp(p, supportedextension2) != 0 &&
-  //           _wcsicmp(p, supportedextension3) != 0 &&
-  //           _wcsicmp(p, supportedextension4) != 0))
-  //  return NULL;
-
-  //if (!contentbuf || contentbuflen <= 0)
-  //  return NULL;
-
-  //ch = contentbuf[contentbuflen];
-  //contentbuf[contentbuflen] = 0;
-  //newbuf = InsertLineNumbers(contentbuf, contentbuflen);
-  //contentbuf[contentbuflen] = ch;  // make sure that contentbuf is NOT modified!
-
-  //bigx = width * 2;
-  //bigy = height * 2;
-  //fntsize = 5;
-
-  //maindc = GetDC(GetDesktopWindow());
-  //dc_small = CreateCompatibleDC(maindc);
-  //dc_big = CreateCompatibleDC(maindc);
-  //bmp_big = CreateCompatibleBitmap(maindc, bigx, bigy);
-  //bmp_small = CreateCompatibleBitmap(maindc, width, height);
-  //ReleaseDC(GetDesktopWindow(), maindc);
-  //oldbmp_big = (HBITMAP)SelectObject(dc_big, bmp_big);
-  //r.left = 0;
-  //r.top = 0;
-  //r.right = bigx;
-  //r.bottom = bigy;
-  //font = CreateFont(-MulDiv(fntsize, GetDeviceCaps(dc_big, LOGPIXELSY), 72), 0,
-  //                  0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-  //                  CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-  //                  VARIABLE_PITCH | FF_DONTCARE, L"Arial");
-  //oldfont = (HFONT)SelectObject(dc_big, font);
-  //FillRect(dc_big, &r, (HBRUSH)GetStockObject(WHITE_BRUSH));
-  //DrawText(dc_big, newbuf, strlen(newbuf), &r, DT_EXPANDTABS);
-  //SelectObject(dc_big, oldfont);
-  //DeleteObject(font);
-
-  //if (is_nt) {
-  //  oldbmp_small = (HBITMAP)SelectObject(dc_small, bmp_small);
-  //  SetStretchBltMode(dc_small, HALFTONE);
-  //  SetBrushOrgEx(dc_small, 0, 0, &pt);
-  //  StretchBlt(dc_small, 0, 0, width, height, dc_big, 0, 0, bigx, bigy,
-  //             SRCCOPY);
-  //  SelectObject(dc_small, oldbmp_small);
-  //  SelectObject(dc_big, oldbmp_big);
-  //  DeleteObject(bmp_big);
-  //} else {
-  //  SelectObject(dc_big, oldbmp_big);
-  //  DeleteObject(bmp_small);
-  //  bmp_small = bmp_big;
-  //}
-  //DeleteDC(dc_big);
-  //DeleteDC(dc_small);
-  //free(newbuf);
-  //return bmp_small;
   return NULL;
 }
 
